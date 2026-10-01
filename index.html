@@ -302,9 +302,9 @@ function init(hasMap){
   if(hasMap){
     try{
       map=L.map('mapBox',{zoomControl:true,attributionControl:true}).setView([37.5665,126.9780],14);
-      const sources=['https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png','https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'];
+      const sources=['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','https://tile.openstreetmap.org/{z}/{x}/{y}.png','https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'];
       let si=0,errs=0,tl;
-      function addTiles(){tl=L.tileLayer(sources[si],{maxZoom:19,subdomains:'abcd',attribution:'© OpenStreetMap, © CARTO',crossOrigin:true});tl.on('tileerror',()=>{if(++errs===8&&si<sources.length-1){si++;errs=0;map.removeLayer(tl);addTiles();}});tl.addTo(map);}
+      function addTiles(){tl=L.tileLayer(sources[si],{maxZoom:19,subdomains:'abc',attribution:'© OpenStreetMap',crossOrigin:true});tl.on('tileerror',()=>{if(++errs===8&&si<sources.length-1){si++;errs=0;map.removeLayer(tl);addTiles();}});tl.addTo(map);}
       addTiles();
     }catch(e){map=null;}
   }
@@ -405,7 +405,7 @@ function init(hasMap){
   function typeLabel(t){return{park:'공원',grass:'잔디밭',garden:'정원',scrub:'풀숲',meadow:'초지',green:'녹지'}[t]||'녹지';}
   function quietLabel(s){if(s.roadDist==null||s.roadDist>=9999)return null;if(s.roadDist>200)return'🔇 아주 조용';if(s.roadDist>80)return'🔉 보통';return'🔊 큰길 근처';}
   function slopeLabel(s){return s.slope==='up'?'⛰️ 오르막':s.slope==='down'?'🛝 내리막':s.slope==='flat'?'🟢 평지':null;}
-  function walkTime(dist){const min=Math.max(1,Math.round(dist/67));return `🚶 약 ${min}분`;} // 도보 약 4km/h
+  function walkTime(dist){const real=dist*1.35;const min=Math.max(1,Math.round(real/67));return `🚶 약 ${min}분`;} // 직선거리×1.35(실제 도보 보정), 도보 약 4km/h
   function spotScore(s){let sc=Math.max(0,100-s.dist/8);sc+=({park:30,garden:25,scrub:35,meadow:30,grass:20}[s.type]||15);if(s.roadDist!=null&&s.roadDist<9999)sc+=Math.min(40,s.roadDist/6);if(s.footDist!=null&&s.footDist<60)sc+=12;return Math.round(sc);}
 
   // 날씨 렌더
